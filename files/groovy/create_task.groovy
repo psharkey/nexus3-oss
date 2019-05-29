@@ -29,6 +29,27 @@ if (parsed_args.task_alert_email) {
 
 parsed_args.booleanTaskProperties.each { key, value -> taskConfiguration.setBoolean(key, Boolean.valueOf(value)) }
 
-Schedule schedule = taskScheduler.scheduleFactory.cron(new Date(), parsed_args.cron)
+Schedule schedule = null;
+
+switch( parsed_args.schedule_type ) {
+    case 'manual':
+        schedule = taskScheduler.scheduleFactory.manual()
+        break
+    case 'now':
+        schedule = taskScheduler.scheduleFactory.now()
+        break
+    case 'once':
+        schedule = taskScheduler.scheduleFactory.once(new Date())
+        break
+    case 'hourly':
+        schedule = taskScheduler.scheduleFactory.hourly(new Date())
+        break
+    case 'daily':
+        schedule = taskScheduler.scheduleFactory.daily(new Date())
+        break
+    default:
+        schedule = taskScheduler.scheduleFactory.cron(new Date(), parsed_args.cron)
+        break
+}
 
 taskScheduler.scheduleTask(taskConfiguration, schedule)
